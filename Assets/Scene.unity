@@ -141,6 +141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerSpeed: 1.75
+  _rotationSpeed: 180
 --- !u!64 &125638360
 MeshCollider:
   m_ObjectHideFlags: 0
