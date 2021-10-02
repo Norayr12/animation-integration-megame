@@ -1,13 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RagdollController : MonoBehaviour
-{
-    [Header("Ragdoll settings")]
-    [SerializeField] private List<Rigidbody> _ragdollComponents;
+{    
+    private List<Rigidbody> _ragdollComponents;
 
-    public void SetRagdoll(bool state)
+    private void Awake()
+    {
+        _ragdollComponents = GetComponentsInChildren<Rigidbody>().ToList();
+    }
+
+    public void ToggleRagdoll(bool state)
     {
         foreach (var component in _ragdollComponents)
             component.isKinematic = !state;

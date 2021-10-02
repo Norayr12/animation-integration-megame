@@ -16,6 +16,15 @@ public class EnemyController: MonoBehaviour
 
     private void Start()
     {
-        _ragdollController.SetRagdoll(false);
+        GameController.Instance.OnEnemyDead += OnEnemyDead;
+
+        _ragdollController.ToggleRagdoll(false);
+    }
+
+    private void OnEnemyDead()
+    {
+        _ragdollController.ToggleRagdoll(true);
+        _animator.enabled = false;
+        _enemySpawner.Spawn();
     }
 }
