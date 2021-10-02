@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class Player : MonoBehaviour
+public class PlayerController: MonoBehaviour
 {
     private Animator _animator;
 
     [Header("Player settings")]
     [SerializeField] private float _playerSpeed;
     [SerializeField] private float _rotationSpeed;
+    [SerializeField] private GameObject _rangedWeapon;
+    [SerializeField] private GameObject _meleeWeapon;
 
     private int _horizontalDirection, _verticalDirection; 
 
@@ -36,4 +39,29 @@ public class Player : MonoBehaviour
         Vector3 rotation = backForward > 0 ? new Vector3(0, _rotationSpeed * rightLeft * Time.fixedDeltaTime, 0) : new Vector3(0, -_rotationSpeed * rightLeft * Time.fixedDeltaTime, 0);
         transform.Rotate(backForward != 0 ? rotation : Vector3.zero);
     }
+
+    private void Update()
+    {
+        if (CheckForDistance())
+            Finishing();
+    }
+
+    public bool CheckForDistance()
+    {
+        return false;
+    }
+
+    public void Finishing()
+    {
+        SetWeapon(_meleeWeapon);
+        _animator.SetTrigger("isFinishing");
+    }
+
+    private void SetWeapon(GameObject weapon)
+    {
+        _meleeWeapon.SetActive(weapon == _meleeWeapon);
+        _rangedWeapon.SetActive(weapon == _rangedWeapon);
+    }
+
+    
 }
