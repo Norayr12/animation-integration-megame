@@ -1,13 +1,15 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using System;
+
 
 [RequireComponent(typeof(Animator), typeof(EnemyViewer))]
 public class GameController: MonoBehaviour
 {
     public static GameController Instance;
-    public event Action OnEnemyDead;
+    public event Action OnEnemyAttacked;
+    public event Action OnAttackEnd;
 
     private Animator _animator;
     private EnemyViewer _enemyChecker;
@@ -29,6 +31,7 @@ public class GameController: MonoBehaviour
     private int _horizontalDirection;
     private int _verticalDirection;
     private bool _isWaitingForKill;
+    private bool _isFinishing;
     
     public bool IsEnemyKilled { get; set; }
 
@@ -53,25 +56,32 @@ public class GameController: MonoBehaviour
     {
         float rightLeft = Input.GetAxis("Horizontal");
         float backForward = Input.GetAxis("Vertical");
-        
-        _animator.SetFloat(_horizontalDirection, rightLeft);
-        if(backForward == 0 && rightLeft != 0)
-            _animator.SetFloat(_verticalDirection, rightLeft != 0 ? backForward + 0.1f : backForward);
-        else
-            _animator.SetFloat(_verticalDirection, backForward);
 
-        transform.Translate(new Vector3(rightLeft, 0, backForward) * _playerSpeed * Time.fixedDeltaTime);
+        if (!_isFinishing)
+        {
+            _animator.SetFloat(_horizontalDirection, rightLeft);
+            if (backForward == 0 && rightLeft != 0)
+                _animator.SetFloat(_verticalDirection, rightLeft != 0 ? backForward + 0.1f : backForward);
+            else
+                _animator.SetFloat(_verticalDirection, backForward);
 
-        Vector3 rotation = backForward > 0 ? new Vector3(0, _rotationSpeed * rightLeft * Time.fixedDeltaTime, 0) : new Vector3(0, -_rotationSpeed * rightLeft * Time.fixedDeltaTime, 0);
-        transform.Rotate(backForward != 0 ? rotation : Vector3.zero);
+            transform.Translate(new Vector3(rightLeft, 0, backForward) * _playerSpeed * Time.fixedDeltaTime);
+
+            Vector3 rotation = backForward > 0 ? new Vector3(0, _rotationSpeed * rightLeft * Time.fixedDeltaTime, 0) : new Vector3(0, -_rotationSpeed * rightLeft * Time.fixedDeltaTime, 0);
+            transform.Rotate(backForward != 0 ? rotation : Vector3.zero);
+        }
     }
 
-    public void OnEnemyDeadInvoke () => OnEnemyDead?.Invoke();
+    public void OnEnemyAttackedInvoke () => OnEnemyAttacked?.Invoke();
 
-    public void PlayerReset()
+    public void OnAttackEndInvoke()
     {
+        OnAttackEnd?.Invoke();
         SetWeapon(_rangedWeapon);
+        ToggleFinishing();
     }
+
+    public void ToggleFinishing () => _isFinishing = !_isFinishing;
 
     private void Kill()
     {       

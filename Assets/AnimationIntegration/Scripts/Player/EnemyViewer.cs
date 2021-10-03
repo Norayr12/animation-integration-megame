@@ -28,9 +28,10 @@ public class EnemyViewer : MonoBehaviour
 
     private bool CheckForBack()
     {
-        Vector3 pos = transform.InverseTransformPoint(_enemy.transform.position);
+        Vector3 playerPos = transform.InverseTransformPoint(_enemy.transform.position);
+        Vector3 enemyPos = _enemy.transform.InverseTransformPoint(transform.position);
 
-        return pos.z > 0;
+        return playerPos.z > 0 && enemyPos.z < 0;
     }
 
     private bool CheckForDistance () => Vector3.Distance(transform.position, _enemy.transform.position) <= _minDistance;
