@@ -19,7 +19,6 @@ public class GameController: MonoBehaviour
     [SerializeField] private float _rotationSpeed;
     [SerializeField] private GameObject _rangedWeapon;
     [SerializeField] private GameObject _meleeWeapon;
-    [SerializeField] private Transform _headBone;
 
     [Header("Finishing settings")]
     [SerializeField] private KeyCode _finishingKey;
@@ -35,8 +34,6 @@ public class GameController: MonoBehaviour
     private bool _isFinishing;
     
     public bool IsEnemyKilled { get; set; }
-
-    public bool IsHeadMaxRotated { get; set; }
 
     private void Awake()
     {
@@ -75,9 +72,6 @@ public class GameController: MonoBehaviour
 
             Vector3 rotation = backForward > 0 ? new Vector3(0, _rotationSpeed * rightLeft * Time.fixedDeltaTime, 0) : new Vector3(0, -_rotationSpeed * rightLeft * Time.fixedDeltaTime, 0);
             transform.Rotate(backForward != 0 ? rotation : Vector3.zero);
-
-            if (IsHeadMaxRotated)
-                _headBone.Rotate(backForward != 0 ? rotation : Vector3.zero);
         }
     }
 

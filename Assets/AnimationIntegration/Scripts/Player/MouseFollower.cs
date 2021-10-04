@@ -30,16 +30,17 @@ public class MouseFollower : MonoBehaviour
 
         if (firstDelta <= _maxRotationAngle || secondDelta <= _maxRotationAngle)
         {
-            GameController.Instance.IsHeadMaxRotated = false;
             _follower.rotation = Quaternion.Euler(0, angle, 0);
             _lastHeadRotationValue = _follower.rotation;
             _lastPlayerRotation = transform.rotation;
         }
         else
         {
-            if(!GameController.Instance.IsHeadMaxRotated)
-                _follower.rotation = Quaternion.Euler(0, _lastHeadRotationValue.eulerAngles.y, 0);
-            GameController.Instance.IsHeadMaxRotated = true;
+            float parentDelta = transform.eulerAngles.y - _lastPlayerRotation.eulerAngles.y;
+            parentDelta -= parentDelta > 360 ? 360 : 0;
+            parentDelta += parentDelta < 0 ? 360 : 0;
+
+            _follower.rotation = Quaternion.Euler(0, _lastHeadRotationValue.eulerAngles.y + parentDelta, 0);
         }
     }
 }
