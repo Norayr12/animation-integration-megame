@@ -7,18 +7,10 @@ public class MouseFollower : MonoBehaviour
     [SerializeField] private float _maxRotationAngle;
     [SerializeField] private LayerMask _followLayer;
 
-    private void FixedUpdate()
-    {
-    }
+    private Quaternion _lastRotationValue;
 
     private void LateUpdate()
-    {
-        float pRot = transform.rotation.eulerAngles.y;
-        float playerRotationNormalized = pRot > 180 ? pRot - 360 : pRot;
-
-        float fRot = _follower.eulerAngles.y;
-        float followerRotationNormalized = fRot > 180 ? fRot - 360 : fRot;
-       
+    {       
         Vector3 result = Vector3.zero;
         Ray castPoint = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -27,22 +19,20 @@ public class MouseFollower : MonoBehaviour
             result = hit.point - _follower.position;
 
         float angle = Mathf.Atan2(result.x, result.z) * Mathf.Rad2Deg + 90;
-        float delta = Mathf.Abs(transform.eulerAngles.y - angle);
-        delta -= delta > 270 ? 270 : 0;        
+        angle += angle < 0 ? 360 : 0;
 
-        _follower.rotation = Quaternion.Euler(0, angle, 0);        
-    }
+        float normalAngle = angle - 90;
+        normalAngle += normalAngle < 0 ? 360 : 0;
 
-    public float WrapAngle(float angle, float wrap)
-    {
-        float value = angle;
+        float firstDelta = Mathf.Abs(normalAngle - transform.eulerAngles.y);
+        float secondDelta = 360 - (Mathf.Abs(normalAngle - transform.eulerAngles.y));
 
-        if (value >= wrap) 
-            value -= 360.0f;
-        else if  (value <= -wrap) 
-            value += 360.0f;
-
-        return value;
+        if (firstDelta <= _maxRotationAngle || secondDelta <= _maxRotationAngle)
+        {
+            _follower.rotation = Quaternion.Euler(0, angle, 0);
+            _lastRotationValue = _follower.rotation;
+        }
+        else
+            _follower.rotation = _lastRotationValue;
     }
 }
-//                                          YA V MAGAZ POSHOL

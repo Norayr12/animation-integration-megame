@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemy: {fileID: 919132148156457257}
-  _minDistance: 1
+  _minDistance: 2
 --- !u!1001 &754726937
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -604,7 +604,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3697b3e01f02c764d86724744d876c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _respawnTime: 5
+  _respawnTime: 2
 --- !u!95 &1284299912
 Animator:
   serializedVersion: 3

@@ -61,10 +61,13 @@ public class GameController: MonoBehaviour
         {
             _animator.SetFloat(_horizontalDirection, rightLeft);
             if (backForward == 0 && rightLeft != 0)
+            {
                 _animator.SetFloat(_verticalDirection, rightLeft != 0 ? backForward + 0.1f : backForward);
+            }
             else
+            {
                 _animator.SetFloat(_verticalDirection, backForward);
-
+            }
             transform.Translate(new Vector3(rightLeft, 0, backForward) * _playerSpeed * Time.fixedDeltaTime);
 
             Vector3 rotation = backForward > 0 ? new Vector3(0, _rotationSpeed * rightLeft * Time.fixedDeltaTime, 0) : new Vector3(0, -_rotationSpeed * rightLeft * Time.fixedDeltaTime, 0);
@@ -76,27 +79,50 @@ public class GameController: MonoBehaviour
 
     public void OnAttackEndInvoke()
     {
-        OnAttackEnd?.Invoke();
+        OnAttackEnd?.Invoke();      
+        _animator.SetFloat(_verticalDirection, 0f);
+
         SetWeapon(_rangedWeapon);
         ToggleFinishing();
     }
 
     public void ToggleFinishing () => _isFinishing = !_isFinishing;
 
-    private void Kill()
-    {       
-        CorrectPosition();
+    private IEnumerator Kill()
+    {
+        ToggleFinishing();
+
+        Vector3 enemyDirection = _enemyChecker.EnemyPosition.forward;
+        Vector3 targetPosition = _enemyChecker.EnemyPosition.position - enemyDirection * _finishingDistance;
+        Vector3 startPosition = transform.position;
+
+        float step = 0f;
+        while (step < 1)
+        {
+            yield return new WaitForFixedUpdate();
+
+            float x = Mathf.Lerp(startPosition.x, targetPosition.x, step);
+            float y = Mathf.Lerp(startPosition.y, targetPosition.y, step);
+            float z = Mathf.Lerp(startPosition.z, targetPosition.z, step);
+
+            float nextX = Mathf.Lerp(startPosition.x, targetPosition.x, step + 0.05f);
+            float nextY = Mathf.Lerp(startPosition.y, targetPosition.y, step + 0.05f);
+            float nextZ = Mathf.Lerp(startPosition.z, targetPosition.z, step + 0.05f);
+
+            transform.position = new Vector3(x, y, z);
+
+            _animator.SetFloat(_verticalDirection, 1f);
+            _animator.SetFloat(_horizontalDirection, 0f);
+
+            transform.LookAt(new Vector3(nextX, nextY, nextZ));
+            step += 0.05f;
+        }
+
+        transform.rotation = _enemyChecker.EnemyPosition.rotation;
         SetWeapon(_meleeWeapon);
         _animator.SetTrigger("isFinishing");
 
         IsEnemyKilled = true;
-    }
-
-    private void CorrectPosition()
-    {
-        Vector3 enemyDirection = _enemyChecker.EnemyPosition.forward;
-        transform.position = _enemyChecker.EnemyPosition.position - enemyDirection * _finishingDistance;
-        transform.rotation = _enemyChecker.EnemyPosition.rotation;
     }
 
     private void SetWeapon(GameObject weapon)
@@ -109,7 +135,7 @@ public class GameController: MonoBehaviour
     {
         _readyTitle.gameObject.SetActive(true);
 
-        if (!_isWaitingForKill)
+        if (!_isWaitingForKill && !_isFinishing)
         {
             _waitForKill = StartCoroutine(WaitForKill());
             _isWaitingForKill = true;
@@ -132,10 +158,11 @@ public class GameController: MonoBehaviour
         while (true)
         {
             yield return null;
+
             if (Input.GetKeyDown(_finishingKey))
             {
-                Kill();
                 _isWaitingForKill = false;
+                StartCoroutine(Kill());                
                 yield break;
             }
         }

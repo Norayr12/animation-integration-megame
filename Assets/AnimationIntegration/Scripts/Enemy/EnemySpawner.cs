@@ -20,11 +20,6 @@ public class EnemySpawner : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(x, y, 0));
         
         if(Physics.Raycast(ray, out RaycastHit hit))
-        {
-            transform.position = hit.point;
-
-        }
-        
+            transform.position = hit.point;       
     }
-
 }  
