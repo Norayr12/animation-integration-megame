@@ -7,7 +7,8 @@ public class MouseFollower : MonoBehaviour
     [SerializeField] private float _maxRotationAngle;
     [SerializeField] private LayerMask _followLayer;
 
-    private Quaternion _lastRotationValue;
+    private Quaternion _lastHeadRotationValue;
+    private Quaternion _lastPlayerRotation;
 
     private void LateUpdate()
     {       
@@ -29,10 +30,16 @@ public class MouseFollower : MonoBehaviour
 
         if (firstDelta <= _maxRotationAngle || secondDelta <= _maxRotationAngle)
         {
+            GameController.Instance.IsHeadMaxRotated = false;
             _follower.rotation = Quaternion.Euler(0, angle, 0);
-            _lastRotationValue = _follower.rotation;
+            _lastHeadRotationValue = _follower.rotation;
+            _lastPlayerRotation = transform.rotation;
         }
         else
-            _follower.rotation = _lastRotationValue;
+        {
+            if(!GameController.Instance.IsHeadMaxRotated)
+                _follower.rotation = Quaternion.Euler(0, _lastHeadRotationValue.eulerAngles.y, 0);
+            GameController.Instance.IsHeadMaxRotated = true;
+        }
     }
 }

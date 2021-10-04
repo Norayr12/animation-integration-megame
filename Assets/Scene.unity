@@ -156,6 +156,7 @@ MonoBehaviour:
   _rotationSpeed: 250
   _rangedWeapon: {fileID: 1914561642}
   _meleeWeapon: {fileID: 6789644810442134078}
+  _headBone: {fileID: 7950983137957854711}
   _finishingKey: 32
   _finishingDistance: 0.7
   _readyTitle: {fileID: 1536809819}
